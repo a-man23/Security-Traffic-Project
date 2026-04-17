@@ -1,0 +1,99 @@
+# Security Strikes & Application Traffic - Python simulation 
+
+simulation:
+  seed: 42
+  time_step_seconds: 1.0
+  total_duration_seconds: 600
+
+# Synthetic “application” baseline (e.g., HTTPS/API mix)
+application_traffic:
+  name: "mixed_https_api"
+  target_goodput_mbps: 420
+  target_latency_ms: 18
+  target_new_connections_per_sec: 850
+  jitter_fraction: 0.04
+
+# Ordered timeline; engine merges overlapping attack windows by worst-case stress
+phases:
+  - id: baseline_warmup
+    start_sec: 0
+    end_sec: 120
+    label: "Baseline warmup"
+    mode: baseline
+
+  - id: steady_state
+    start_sec: 120
+    end_sec: 300
+    label: "Steady application load"
+    mode: baseline
+
+  - id: malware_emulation
+    start_sec: 300
+    end_sec: 420
+    label: "Malware download / C2-style burst (simulated)"
+    mode: attack
+    attack_type: malware_c2_burst
+    # Relative stress 0..1 applied on top of baseline model
+    intensity: 0.72
+
+  - id: cool_down
+    start_sec: 420
+    end_sec: 480
+    label: "Post-attack stabilization"
+    mode: recovery
+
+  - id: intrusion_portscan
+    start_sec: 480
+    end_sec: 560
+    label: "Intrusion attempt / high-rate connect scan (simulated)"
+    mode: attack
+    attack_type: intrusion_port_scan
+    intensity: 0.65
+
+  - id: recovery
+    start_sec: 560
+    end_sec: 600
+    label: "Recovery & sustained baseline"
+    mode: recovery
+
+# How strongly each mode perturbs metrics (tunable for “what-if” analysis)
+effects:
+  baseline:
+    goodput_factor: 1.0
+    latency_factor: 1.0
+    cps_factor: 1.0
+    security_events_per_sec: 0.15
+    drop_rate: 0.0002
+  attack:
+    goodput_factor: 0.55
+    latency_factor: 2.4
+    cps_factor: 1.85
+    security_events_per_sec: 95.0
+    drop_rate: 0.012
+  recovery:
+    goodput_factor: 0.88
+    latency_factor: 1.35
+    cps_factor: 1.1
+    security_events_per_sec: 8.0
+    drop_rate: 0.002
+
+# Per attack type: IDS/FW narrative + extra metric bias (multipliers)
+attack_profiles:
+  malware_c2_burst:
+    description: >
+      Bursty encrypted sessions mimicking staged payload retrieval and beaconing;
+      sudden rise in new flows to rare destinations and non-standard ports.
+    ids_signature_hits_per_sec_peak: 140
+    mitigation_cpu_load_factor: 1.35
+  intrusion_port_scan:
+    description: >
+      High-rate TCP connect attempts across many destination ports from a small
+      set of sources; characteristic horizontal scan pattern.
+    ids_signature_hits_per_sec_peak: 220
+    mitigation_cpu_load_factor: 1.22
+
+output:
+  directory: output
+  report_filename: TECHNICAL_REPORT.md
+  csv_filename: metrics_timeseries.csv
+  summary_filename: summary.json

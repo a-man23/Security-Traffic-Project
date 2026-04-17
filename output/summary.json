@@ -1,0 +1,114 @@
+{
+  "application_traffic": "mixed_https_api",
+  "total_duration_sec": 600,
+  "phases": [
+    {
+      "id": "baseline_warmup",
+      "start_sec": 0.0,
+      "end_sec": 120.0,
+      "label": "Baseline warmup",
+      "mode": "baseline",
+      "attack_type": null,
+      "intensity": 0.0
+    },
+    {
+      "id": "steady_state",
+      "start_sec": 120.0,
+      "end_sec": 300.0,
+      "label": "Steady application load",
+      "mode": "baseline",
+      "attack_type": null,
+      "intensity": 0.0
+    },
+    {
+      "id": "malware_emulation",
+      "start_sec": 300.0,
+      "end_sec": 420.0,
+      "label": "Malware download / C2-style burst (simulated)",
+      "mode": "attack",
+      "attack_type": "malware_c2_burst",
+      "intensity": 0.72
+    },
+    {
+      "id": "cool_down",
+      "start_sec": 420.0,
+      "end_sec": 480.0,
+      "label": "Post-attack stabilization",
+      "mode": "recovery",
+      "attack_type": null,
+      "intensity": 0.0
+    },
+    {
+      "id": "intrusion_portscan",
+      "start_sec": 480.0,
+      "end_sec": 560.0,
+      "label": "Intrusion attempt / high-rate connect scan (simulated)",
+      "mode": "attack",
+      "attack_type": "intrusion_port_scan",
+      "intensity": 0.65
+    },
+    {
+      "id": "recovery",
+      "start_sec": 560.0,
+      "end_sec": 600.0,
+      "label": "Recovery & sustained baseline",
+      "mode": "recovery",
+      "attack_type": null,
+      "intensity": 0.0
+    }
+  ],
+  "attack_windows": [
+    {
+      "phase_id": "malware_emulation",
+      "attack_type": "malware_c2_burst",
+      "start_sec": 300.0,
+      "end_sec": 420.0,
+      "duration_sec": 120.0
+    },
+    {
+      "phase_id": "intrusion_portscan",
+      "attack_type": "intrusion_port_scan",
+      "start_sec": 480.0,
+      "end_sec": 560.0,
+      "duration_sec": 80.0
+    }
+  ],
+  "stats_by_mode": {
+    "baseline": {
+      "count": 300,
+      "goodput_mbps_mean": 419.980797259613,
+      "goodput_mbps_p95": 446.88478176476076,
+      "latency_ms_mean": 17.972469593545593,
+      "latency_ms_p95": 19.341776268580315,
+      "security_events_mean": 0.15030304774074457,
+      "ids_hits_mean": 0.0
+    },
+    "attack": {
+      "count": 200,
+      "goodput_mbps_mean": 206.410742501563,
+      "goodput_mbps_p95": 219.09970852826837,
+      "latency_ms_mean": 42.99840245943432,
+      "latency_ms_p95": 45.880371062788626,
+      "security_events_mean": 224.66777839088968,
+      "ids_hits_mean": 117.27485466836904
+    },
+    "recovery": {
+      "count": 100,
+      "goodput_mbps_mean": 369.9299228440598,
+      "goodput_mbps_p95": 397.06892138692365,
+      "latency_ms_mean": 24.485480705766626,
+      "latency_ms_p95": 26.677102883944336,
+      "security_events_mean": 8.03384847464776,
+      "ids_hits_mean": 0.0
+    }
+  },
+  "overall": {
+    "count": 600,
+    "goodput_mbps_mean": 340.44896660433744,
+    "goodput_mbps_p95": 440.880366088455,
+    "latency_ms_mean": 27.399949067545343,
+    "latency_ms_p95": 44.95834522323842,
+    "security_events_mean": 76.3033857332749,
+    "ids_hits_mean": 39.091618222789684
+  }
+}
