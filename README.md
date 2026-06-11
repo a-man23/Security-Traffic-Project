@@ -2,7 +2,7 @@
 
 **Option:** Security Strikes and Application Simulation.
 
-This folder contains a **reproducible Python simulator** (not Keysight CyPerf hardware/software measurements) that models:
+This folder contains a **reproducible Python simulator** that models:
 
 - steady application traffic targets,
 - scheduled attack windows (types, timing, duration, intensity),
